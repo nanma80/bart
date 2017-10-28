@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
 import './Favs.css';
 
-class Favs extends React.Component {
-	constructor(props) {
-        super(props);
-    }
-
+class Favs extends Component {
 	render() {
 		const estimates = this.props.estimates.sort((a, b) => {
 			return a.station > b.station; // alphabetically by station name
 		});
+
 		const entries = estimates.map(estimate => 
-				<tr>
+				<tr key={estimate.station + estimate.destination}>
 					<td>{estimate.station}</td>
 					<td>{estimate.destination}</td>
 					<td>{estimate.time}</td>
@@ -20,14 +17,7 @@ class Favs extends React.Component {
 		);
 
 		return (
-			<table class="table table-striped new-records-table">
-				<thead>
-		            <tr>
-		              <th>Station</th>
-		              <th>Destination</th>
-		              <th>Time</th>
-		            </tr>
-	            </thead>
+			<table className="table table-striped new-records-table">
 	            <tbody>
 	            	{entries}
 	            </tbody>
