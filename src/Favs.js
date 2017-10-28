@@ -15,11 +15,14 @@ class Favs extends Component {
 		});
 
 		return (
-			<table className="table table-striped new-records-table">
-	            <tbody>
-	            	{entries}
-	            </tbody>
-        	</table>
+			<div>
+				<h4>Favorite routes</h4>
+				<table className="table table-striped new-records-table">
+		            <tbody>
+		            	{entries}
+		            </tbody>
+	        	</table>
+        	</div>
 		);
 	}
 }

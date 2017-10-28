@@ -4,6 +4,7 @@ import _ from 'underscore';
 import './App.css';
 import Favs from './Favs.js'
 import StatusBar from './StatusBar.js'
+import ByStation from './ByStation.js'
 
 class App extends Component {
   constructor(props) {
@@ -18,6 +19,7 @@ class App extends Component {
   	return [
   		['CIVC', 'RICH'],
       ['DBRK', 'MLBR'],
+      ['DBRK', 'RICH'],
       ['ASHB', 'RICH'],
   	];
   }
@@ -60,7 +62,7 @@ class App extends Component {
         <h1 className="App-title">BART Real Time Tracker</h1>
         <StatusBar estimates={this.state.estimates} updateEstimates={() => this.updateEstimates()}/>
         <Favs estimates={this.state.estimates}/>
-
+        <ByStation />
       </div>
     );
   }
