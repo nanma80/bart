@@ -9,9 +9,11 @@ class StatusBar extends Component {
 
 	render() {
 		var lastUpdatedAt = '';
+		const estimates = this.props.estimates;
+		const keys = Object.keys(estimates);
 
-		if (this.props.estimates.length > 0) {
-			lastUpdatedAt = new Date(Math.max.apply(null, this.props.estimates.map(a => a.fetchTime))).toLocaleTimeString();
+		if (keys.length > 0) {
+			lastUpdatedAt = new Date(Math.max.apply(null, keys.map(k => estimates[k].fetchTime))).toLocaleTimeString();
 		}
 
 		return (

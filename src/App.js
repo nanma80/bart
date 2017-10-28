@@ -10,7 +10,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      estimates: [],
+      estimates: {},
     };
   }
 
@@ -24,6 +24,7 @@ class App extends Component {
 
   fetchEstimate(station, destination) {
     const authKey = 'MW9S-E7SL-26DU-VV8V';
+    const key = station + destination;
 
     axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${authKey}&json=y`)
       .then(res => {
@@ -35,15 +36,15 @@ class App extends Component {
           estimate['destination'] = destinationEstimate.destination;
           estimate['time'] = destinationEstimate.estimate.map(r => r.minutes).join(", ");
           estimate['fetchTime'] = new Date(root.date + " " + root.time);
-          this.state.estimates.push(estimate);
-          this.setState(this.state.estimates);
+          var estimates = Object.assign({}, this.state.estimates);
+          estimates[key] = estimate;
+          this.setState({estimates: estimates});
         }
       });
   }
 
   updateEstimates() {
     const that = this;
-    this.setState({estimates: []});
     this.getStationDestination().map(
       pair => that.fetchEstimate(pair[0], pair[1])
     );
@@ -59,6 +60,7 @@ class App extends Component {
         <h1 className="App-title">BART Real Time Tracker</h1>
         <StatusBar estimates={this.state.estimates} updateEstimates={() => this.updateEstimates()}/>
         <Favs estimates={this.state.estimates}/>
+
       </div>
     );
   }
