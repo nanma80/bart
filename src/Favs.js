@@ -10,7 +10,7 @@ class Favs extends Component {
 		const entries = estimates.map(estimate => 
 				<tr key={estimate.station + estimate.destination}>
 					<td>{estimate.station}</td>
-					<td>{estimate.destination}</td>
+					<td>{estimate.destination.substring(0, 4)}</td>
 					<td>{estimate.time}</td>
 				</tr>
 
