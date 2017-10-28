@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import _ from 'underscore';
 import './ByStation.css';
+import config from './config.json'
 
 class ByStation extends Component {
   constructor(props) {
@@ -14,9 +15,8 @@ class ByStation extends Component {
   }
 
   fetchStations() {
-    const authKey = 'MW9S-E7SL-26DU-VV8V';
 
-    axios.get(`http://api.bart.gov/api/stn.aspx?cmd=stns&key=${authKey}&json=y`)
+    axios.get(`http://api.bart.gov/api/stn.aspx?cmd=stns&key=${config.authKey}&json=y`)
       .then(res => {
         var stations = res.data.root.stations.station.map(s => {
         	return {
@@ -31,9 +31,8 @@ class ByStation extends Component {
 
   fetchEstimate(station) {
   	if (station === null) return;
-    const authKey = 'MW9S-E7SL-26DU-VV8V';
 
-    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${authKey}&json=y`)
+    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
       .then(res => {
         const estimates = {};
         const root = res.data.root;

@@ -5,6 +5,9 @@ import './App.css';
 import Favs from './Favs.js'
 import StatusBar from './StatusBar.js'
 import ByStation from './ByStation.js'
+import config from './config.json'
+
+console.log(config.authKey)
 
 class App extends Component {
   constructor(props) {
@@ -25,10 +28,9 @@ class App extends Component {
   }
 
   fetchEstimate(station, destination) {
-    const authKey = 'MW9S-E7SL-26DU-VV8V';
     const key = station + destination;
 
-    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${authKey}&json=y`)
+    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
       .then(res => {
         const estimate = {};
         const root = res.data.root;
