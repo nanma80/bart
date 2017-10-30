@@ -7,14 +7,15 @@ import StatusBar from './StatusBar.js'
 import ByStation from './ByStation.js'
 import config from './config.json'
 
-console.log(config.authKey)
-
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      estimates: {},
+      favsEstimates: {},
+      stations: [],
+      currentStation: null,
+      byStationEstimates: {},
     };
   }
 
@@ -25,6 +26,25 @@ class App extends Component {
       ['DBRK', 'RICH'],
       ['ASHB', 'RICH'],
   	];
+  }
+
+  setCurrentStation(station) {
+    this.setState({currentStation: station}, this.updateEstimates);
+  }
+
+  fetchStations() {
+    axios.get(`http://api.bart.gov/api/stn.aspx?cmd=stns&key=${config.authKey}&json=y`)
+      .then(res => {
+        var stations = res.data.root.stations.station.map(s => {
+          return {
+            stationName: s.name, 
+            station: s.abbr
+          };
+        });
+        stations.unshift({stationName: "Select a station", station: ''});
+        this.setState({stations: stations});
+      })
+      .catch(error => console.log(error));
   }
 
   fetchEstimate(station, destination) {
@@ -38,13 +58,39 @@ class App extends Component {
         if (destinationEstimate) {
           estimate['station'] = root.station[0].name;
           estimate['destination'] = destinationEstimate.destination;
+          estimate['destinationAbbreviation'] = destination;
           estimate['time'] = destinationEstimate.estimate.map(r => r.minutes).join(", ");
           estimate['fetchTime'] = new Date(root.date + " " + root.time);
-          var estimates = Object.assign({}, this.state.estimates);
+          var estimates = Object.assign({}, this.state.favsEstimates);
           estimates[key] = estimate;
-          this.setState({estimates: estimates});
+          this.setState({favsEstimates: estimates});
         }
-      });
+      })
+      .catch(error => console.log(error));
+  }
+
+  fetchEstimatesByStation(station) {
+    if (station === null) return;
+
+    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
+      .then(res => {
+        const estimates = {};
+        const root = res.data.root;
+        const allDestinations = root.station[0].etd;
+        _.each(allDestinations, d => {
+          var estimate = {};
+          estimate['station'] = root.station[0].name;
+          estimate['destination'] = d.destination;
+          estimate['destinationAbbreviation'] = d.abbreviation;
+          estimate['time'] = d.estimate.map(r => r.minutes).join(", ");
+          estimate['fetchTime'] = new Date(root.date + " " + root.time);
+          const key = station + d.abbreviation;
+          estimates[key] = estimate;
+          return;
+        })
+        this.setState({byStationEstimates: estimates})
+      })
+      .catch(error => console.log(error));
   }
 
   updateEstimates() {
@@ -52,9 +98,11 @@ class App extends Component {
     this.getStationDestination().map(
       pair => that.fetchEstimate(pair[0], pair[1])
     );
+    this.fetchEstimatesByStation(this.state.currentStation);
   }
 
   componentDidMount() {
+    this.fetchStations();
     this.updateEstimates();
   }
 
@@ -62,9 +110,12 @@ class App extends Component {
     return (
       <div className="App">
         <h1 className="App-title">BART Real Time Tracker</h1>
-        <StatusBar estimates={this.state.estimates} updateEstimates={() => this.updateEstimates()}/>
-        <Favs estimates={this.state.estimates}/>
-        <ByStation />
+        <StatusBar estimates={this.state.favsEstimates} updateEstimates={() => this.updateEstimates()}/>
+        <Favs estimates={this.state.favsEstimates}/>
+        <ByStation stations={this.state.stations} 
+          byStationEstimates={this.state.byStationEstimates} 
+          fetchStations={() => this.fetchStations()} 
+          setCurrentStation={(station) => this.setCurrentStation(station)}/>
       </div>
     );
   }
