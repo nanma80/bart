@@ -18,6 +18,7 @@ class ByStation extends Component {
 				<select id="station-selector" onChange={() => this.selectOnChange()}>
 					{stationsEntries}
 				</select>
+        <p/>
         <EstimateTable 
           favs={this.props.favs} 
           addFav={(fav) => this.props.addFav(fav)}

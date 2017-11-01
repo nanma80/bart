@@ -14,8 +14,8 @@ class EstimateTable extends Component {
 			return	(
 				<tr key={k}>
 					<td>{isFav 
-						? <TiHeartFullOutline onClick={() => this.props.removeFav(k)}/> 
-						: <TiHeartOutline onClick={() => this.props.addFav(k)}/>} 
+						? <TiHeartFullOutline className="icon" onClick={() => this.props.removeFav(k)}/> 
+						: <TiHeartOutline className="icon" onClick={() => this.props.addFav(k)}/>} 
 					</td>
 					<td>{estimate.station}</td>
 					<td>{estimate.destinationAbbreviation}</td>
