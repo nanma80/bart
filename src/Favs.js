@@ -7,7 +7,11 @@ class Favs extends Component {
 		return (
 			<div>
 				<h4>Favorite routes</h4>
-				<EstimateTable estimates={this.props.estimates} />
+				<EstimateTable 
+					favs={this.props.favs} 
+		            addFav={(fav) => this.props.addFav(fav)}
+		            removeFav={(fav) => this.props.removeFav(fav)}
+					estimates={this.props.estimates} />
         	</div>
 		);
 	}

@@ -16,16 +16,30 @@ class App extends Component {
       stations: [],
       currentStation: null,
       byStationEstimates: {},
+      favs: new Set()
     };
   }
 
-  getStationDestination() {
-  	return [
-  		['CIVC', 'RICH'],
-      ['DBRK', 'MLBR'],
-      ['DBRK', 'RICH'],
-      ['ASHB', 'RICH'],
-  	];
+  setFavs() {
+    localStorage.setItem('favs', Array.from(this.state.favs).join(','));
+  }
+
+  fetchFavs() {
+    const favsString = localStorage.getItem('favs');
+    const favsList = favsString === '' ? [] : favsString.split(',');
+    this.setState({favs: new Set(favsList)}, this.updateEstimates);
+  }
+
+  addFav(fav) {
+    var favs = new Set(this.state.favs);
+    favs.add(fav);
+    this.setState({favs: favs}, this.updateEstimates);
+  }
+
+  removeFav(fav) {
+    var favs = new Set(this.state.favs);
+    favs.delete(fav);
+    this.setState({favs: favs}, this.updateEstimates);
   }
 
   setCurrentStation(station) {
@@ -47,8 +61,10 @@ class App extends Component {
       .catch(error => console.log(error));
   }
 
-  fetchEstimate(station, destination) {
-    const key = station + destination;
+  fetchEstimate(stationDestinationPair) {
+    const key = stationDestinationPair;
+    const station = key.substr(0,4);
+    const destination = key.substr(4,4);
 
     axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
       .then(res => {
@@ -94,14 +110,13 @@ class App extends Component {
   }
 
   updateEstimates() {
-    const that = this;
-    this.getStationDestination().map(
-      pair => that.fetchEstimate(pair[0], pair[1])
-    );
+    _.each(Array.from(this.state.favs), (f) => this.fetchEstimate(f));
     this.fetchEstimatesByStation(this.state.currentStation);
+    this.setFavs();
   }
 
   componentDidMount() {
+    this.fetchFavs();
     this.fetchStations();
     this.updateEstimates();
   }
@@ -111,15 +126,22 @@ class App extends Component {
       <div className="App">
         <h1 className="App-title">BART Real Time Tracker</h1>
         <StatusBar estimates={this.state.favsEstimates} updateEstimates={() => this.updateEstimates()}/>
-        <Favs estimates={this.state.favsEstimates}/>
-        <ByStation stations={this.state.stations} 
+        <Favs 
+          favs={this.state.favs} 
+          addFav={(fav) => this.addFav(fav)}
+          removeFav={(fav) => this.removeFav(fav)}
+          estimates={this.state.favsEstimates}
+          />
+        <ByStation favs={this.state.favs}
+          addFav={(fav) => this.addFav(fav)}
+          removeFav={(fav) => this.removeFav(fav)}
+          stations={this.state.stations} 
           byStationEstimates={this.state.byStationEstimates} 
           fetchStations={() => this.fetchStations()} 
           setCurrentStation={(station) => this.setCurrentStation(station)}/>
       </div>
     );
   }
-
 }
 
 export default App;
