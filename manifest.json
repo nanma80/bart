@@ -1,5 +1,10 @@
 {
- "name": "Bart",
+ "short_name": "BART",
+ "name": "BART",
+ "start_url": "./index.html",
+ "display": "standalone",
+ "theme_color": "#000000",
+ "background_color": "#ffffff"
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
