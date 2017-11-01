@@ -26,7 +26,9 @@ class App extends Component {
 
   fetchFavs() {
     const favsString = localStorage.getItem('favs');
-    const favsList = favsString === '' ? [] : favsString.split(',');
+    const favsList = 
+      (favsString === null || favsString === undefined || favsString === '') 
+      ? [] : favsString.split(',');
     this.setState({favs: new Set(favsList)}, this.updateEstimates);
   }
 
