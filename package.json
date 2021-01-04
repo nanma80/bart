@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://nan.ma/bart",
   "dependencies": {
-    "axios": "^0.17.0",
+    "axios": "^0.21.1",
     "gh-pages": "^1.0.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
