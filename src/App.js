@@ -49,7 +49,7 @@ class App extends Component {
   }
 
   fetchStations() {
-    axios.get(`http://api.bart.gov/api/stn.aspx?cmd=stns&key=${config.authKey}&json=y`)
+    axios.get(`https://api.bart.gov/api/stn.aspx?cmd=stns&key=${config.authKey}&json=y`)
       .then(res => {
         var stations = res.data.root.stations.station.map(s => {
           return {
@@ -68,7 +68,7 @@ class App extends Component {
     const station = key.substr(0,4);
     const destination = key.substr(4,4);
 
-    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
+    axios.get(`https://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
       .then(res => {
         const estimate = {};
         const root = res.data.root;
@@ -90,7 +90,7 @@ class App extends Component {
   fetchEstimatesByStation(station) {
     if (station === null) return;
 
-    axios.get(`http://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
+    axios.get(`https://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
       .then(res => {
         const estimates = {};
         const root = res.data.root;
