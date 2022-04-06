@@ -66,21 +66,26 @@ class App extends Component {
   fetchEstimate(stationDestinationPair) {
     const key = stationDestinationPair;
     const station = key.substr(0,4);
-    const destination = key.substr(4,4);
+    const destination = key.substr(4);
 
     axios.get(`https://api.bart.gov/api/etd.aspx?cmd=etd&orig=${station}&key=${config.authKey}&json=y`)
       .then(res => {
         const estimate = {};
         const root = res.data.root;
-        const destinationEstimate = _.find(root.station[0].etd, t => t.abbreviation === destination);
+        const destinationEstimate = _.find(root.station[0].etd, t => t.destination === destination);
         if (destinationEstimate) {
           estimate['station'] = root.station[0].name;
           estimate['destination'] = destinationEstimate.destination;
-          estimate['destinationAbbreviation'] = destination;
           estimate['time'] = destinationEstimate.estimate.map(r => r.minutes).join(", ");
+          if (destinationEstimate.estimate.length > 0) {
+            estimate['direction'] = destinationEstimate.estimate[0].direction === "North" ? "▲" : "▼";
+          } else {
+            estimate['direction'] = '';
+          }
           estimate['fetchTime'] = new Date(root.date + " " + root.time);
           var estimates = Object.assign({}, this.state.favsEstimates);
           estimates[key] = estimate;
+          window.estimates = estimates;
           this.setState({favsEstimates: estimates});
         }
       })
@@ -99,10 +104,14 @@ class App extends Component {
           var estimate = {};
           estimate['station'] = root.station[0].name;
           estimate['destination'] = d.destination;
-          estimate['destinationAbbreviation'] = d.abbreviation;
           estimate['time'] = d.estimate.map(r => r.minutes).join(", ");
+          if (d.estimate.length > 0) {
+            estimate['direction'] = d.estimate[0].direction === "North" ? "▲" : "▼";
+          } else {
+            estimate['direction'] = '';
+          }
           estimate['fetchTime'] = new Date(root.date + " " + root.time);
-          const key = station + d.abbreviation;
+          const key = station + d.destination;
           estimates[key] = estimate;
           return;
         })
